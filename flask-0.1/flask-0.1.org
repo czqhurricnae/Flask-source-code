@@ -1,4 +1,5 @@
 # -*- eval: (setq org-download-image-dir (concat default-directory "/screenshotImg")); -*-
+#+LATEX_CLASS: my-article
 
 #+BEGIN_SRC python :results valuse list :exports both
 # -*- coding: utf-8 -*-
@@ -420,7 +421,7 @@ class Flask(object)
     ...
 #+END_SRC
 
-Flask 的路由装饰器, `self.url_map.add(Rule(rule, **options))` 调用了 `Map` 类中的 `add` 方法, 其中参数 `rulefactory` 为 `Rule` 类实例.
+Flask 的路由装饰器, =self.url_map.add(Rule(rule, **options))= 调用了 =Map= 类中的 =add= 方法, 其中参数 =rulefactory= 为 =Rule= 类实例.
 
 #+BEGIN_SRC python
 class Map()
@@ -439,7 +440,7 @@ class Map()
     ...
 #+END_SRC
 
-`rulefactory.get_rules(self)` 只是返回 `Rule`类实例自身. 如下所示:
+=rulefactory.get_rules(self)= 只是返回 =Rule= 类实例自身. 如下所示:
 
 #+BEGIN_SRC python :results valuse list :exports both
 class Rule(object)
@@ -449,10 +450,10 @@ class Rule(object)
     ...
 #+END_SRC
 
-`self._rules_by_endpoint.setdefault(rule.endpoint, []).append(rule)`
-`self._rules_by_endpoint` 初始值为 `<type 'dict'>: {'static': [<Rule '/static/<filename>' -> static>]}`.
-`rule.endpoint` 即为 `Rule(string="/", methods=['GET'], endpoint="index").endpoint`, 值为 `index`.
-运行后`self._rules_by_endpoint`为 `<type 'dict'>: {'index': [<Rule (unbound)>], 'static': [<Rule '/static/<filename>' -> static>]}`
+=self._rules_by_endpoint.setdefault(rule.endpoint, []).append(rule)=
+=self._rules_by_endpoint= 初始值为 =<type 'dict'>: {'static': [<Rule '/static/<filename>' -> static>]}=.
+=rule.endpoint= 即为 =Rule(string="/", methods=['GET'], endpoint="index").endpoint=, 值为 =index=.
+运行后=self._rules_by_endpoint= 为 =<type 'dict'>: {'index': [<Rule (unbound)>], 'static': [<Rule '/static/<filename>' -> static>]}=
 
 * environ 参数传递
 #+BEGIN_SRC python :results valuse list :exports both
@@ -475,7 +476,12 @@ class Flask(object):
     ...
 #+END_SRC
 
-`app.run(debug=True)` 调用 werkzeug 包中的 `run_simple`, 将`app` 实例自身传入.
+=app.run(debug=True)= 调用 werkzeug 包中的 =run_simple=, 将 =self(即app)= 实例自身传入.
+同时将 =options= 这个字典传入:
+
+#+DOWNLOADED: /var/folders/2h/_7667pjd23s4wd9mpdwy401w0000gn/T/screenshot.jpg @ 2019-10-23 19:11:12
+[[file:screenshotImg/screenshot_2019-10-23_19-11-12.jpg]]
+
 
 TODO: werkzeug 包如何将 environ 传入给 app.
 
@@ -504,7 +510,7 @@ TODO: werkzeug 包如何将 environ 传入给 app.
       ...
 #+END_SRC
 
-在 `Flask.wsgi_app` 中, `_request_ctx_stack.push(_RequestContext(self, environ))` 实例化 `_RequestContext` 类.
+在 =Flask.wsgi_app= 中, =_request_ctx_stack.push(_RequestContext(self, environ))= 实例化 =_RequestContext= 类.
 
 #+DOWNLOADED: file:///Users/c/Pictures/_request_ctx_stack.png @ 2019-06-30 16:26:02
 [[file:screenshotImg/_request_ctx_stack_2019-06-30_16-26-02.png]]
@@ -526,9 +532,9 @@ class _RequestContext(object):
         self.flashes = None
 #+END_SRC
 
-在该类的初始化方法中, `self.url_adapter = app.url_map.bind_to_environ(environ)` 调用 `app.url_map.bind_to_environ` 方法.
-`app.url_map` 为 `Map` 类.
-`Map` 类的 `bind_to_environ` 方法定义如下:
+在该类的初始化方法中, =self.url_adapter = app.url_map.bind_to_environ(environ)= 调用 =app.url_map.bind_to_environ= 方法.
+=app.url_map= 为 =Map= 类.
+=Map= 类的 =bind_to_environ= 方法定义如下:
 
 #+BEGIN_SRC python :results valuse list :exports both
 class Map(object):
@@ -595,25 +601,28 @@ class Map(object):
                 subdomain, environ['wsgi.url_scheme'],
                 environ['REQUEST_METHOD'], environ.get('PATH_INFO'))`
 
-紧接着调用 `Map` 类的 `bind` 方法.
+紧接着调用 =Map= 类的 =bind= 方法.
 此时的参数如下所示:
-- self: Map([[<Rule '/static/<filename>' -> static>,
- <Rule '/' (HEAD, GET) -> index>,
- <Rule '/hello/' (POST, HEAD, GET) -> hello_user>,
- <Rule '/hello/<name>' (HEAD, GET) -> hello>]])
+
+#+BEGIN_SRC python :results valuse list :exports both
+self: Map([[<Rule '/static/<filename>' -> static>,
+            <Rule '/' (HEAD, GET) -> index>,
+            <Rule '/hello/' (POST, HEAD, GET) -> hello_user>,
+            <Rule '/hello/<name>' (HEAD, GET) -> hello>]])
+#+END_SRC
 
 - eviron:
 
-#+DOWNLOADED: file:///Users/c/Pictures/environ.png @ 2019-06-30 18:48:53
+,#+DOWNLOADED: file:///Users/c/Pictures/environ.png @ 2019-06-30 18:48:53
 [[file:screenshotImg/environ_2019-06-30_18-48-53.png]]
 
 - server_name: 'localhost:5000'
 
 - subdomain: None
 
-`bind` 方法定义如下:
+=bind= 方法定义如下:
 
-#+BEGIN_SRC python :results valuse list :exports both
+,#+BEGIN_SRC python :results valuse list :exports both
 class Map(object):
     ...
     def bind(self, server_name, script_name=None, subdomain=None,
@@ -643,7 +652,7 @@ class Map(object):
     ...
 #+END_SRC
 
-紧接着调用 `MapAdapter` 类的初始化方法.
+紧接着调用 =MapAdapter= 类的初始化方法.
 
 #+BEGIN_SRC python :results valuse list :exports both
 class MapAdapter(object):
@@ -670,10 +679,13 @@ class MapAdapter(object):
 
 - self: <werkzeug.routing.MapAdapter object at 0x10dbc3410>
 
-- map: Map([[<Rule '/static/<filename>' -> static>,
- <Rule '/' (HEAD, GET) -> index>,
- <Rule '/hello/' (POST, HEAD, GET) -> hello_user>,
- <Rule '/hello/<name>' (HEAD, GET) -> hello>]])
+-
+#+BEGIN_SRC python :results valuse list :exports both
+map: Map([[<Rule '/static/<filename>' -> static>,
+           <Rule '/' (HEAD, GET) -> index>,
+           <Rule '/hello/' (POST, HEAD, GET) -> hello_user>,
+           <Rule '/hello/<name>' (HEAD, GET) -> hello>]])
+#+END_SRC
 
 - script_name: ''
 
@@ -687,7 +699,7 @@ class MapAdapter(object):
 
 <<MapAdapter 类实例调用 match 时实例的参数>>
 
-最终返回`MapAdapter`类实例赋予变量 url_adapter.
+最终返回 =MapAdapter= 类实例赋予变量 url_adapter.
 
 * URL 匹配
 
@@ -752,7 +764,7 @@ class Flask(object):
       ...
 #+END_SRC
 
-`rv = _request_ctx_stack.top.url_adapter.match()` 调用 `MapAdapter` 类的 match 方法, 如下所示:
+=rv = _request_ctx_stack.top.url_adapter.match()= 调用 =MapAdapter= 类的 match 方法, 如下所示:
 [[MapAdapter %E7%B1%BB%E5%AE%9E%E4%BE%8B%E8%B0%83%E7%94%A8 match %E6%97%B6%E5%AE%9E%E4%BE%8B%E7%9A%84%E5%8F%82%E6%95%B0][See MapAdapter 类实例调用 match 时实例的参数]]
 
 #+BEGIN_SRC python :results valuse list :exports both
@@ -892,7 +904,7 @@ class MapAdapter(object):
     ...
 #+END_SRC
 
-`rv = rule.match(path)` 调用 `Rule` 类的 `match` 方法, 如下所示:
+=rv = rule.match(path)= 调用 =Rule= 类的 =match= 方法, 如下所示:
 
 #+BEGIN_SRC python :results valuse list :exports both
 class Rule(RuleFactory):
@@ -941,15 +953,15 @@ class Rule(RuleFactory):
 - self: {Rule}/hello/<name>
 - path: {unicode} u'|/hello/test'
 
-`m = self._regex.search(path)` 就是用正则来匹配 URL .
-`m.re.pattern` => `u'^\\|\\/hello\\/(?P<name>[^/]{1,})$'`.
+=m = self._regex.search(path)= 就是用正则来匹配 URL .
+=m.re.pattern= => =u'^\\|\\/hello\\/(?P<name>[^/]{1,})$'=.
 
 #+DOWNLOADED: file:///Users/c/Pictures/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D%E7%BB%93%E6%9E%9C.png @ 2019-06-30 22:20:24
 [[file:screenshotImg/%25E6%25AD%25A3%25E5%2588%2599%25E5%258C%25B9%25E9%2585%258D%25E7%25BB%2593%25E6%259E%259C_2019-06-30_22-20-24.png]]
-`groups = m.groupdict()` => `<type 'dict'>: {u'name': u'test'}`.
+=groups = m.groupdict()= => =<type 'dict'>: {u'name': u'test'}=.
 
-结果返回到 `MapAdapter` 类 `match` 方法中的 `rv = rule.match(path)`, `rv` 得到返回值: `<type 'tuple'>: ('hello', {'name': u'test'})`,
-最终 `Flask` 类中 `match_request` 方法中的 `rv = _request_ctx_stack.top.url_adapter.match()` 得到返回值: `<type 'tuple'>: ('hello', {'name': u'test'})`.
+结果返回到 =MapAdapter= 类 =match= 方法中的 =rv = rule.match(path)=, =rv= 得到返回值: =<type 'tuple'>: ('hello', {'name': u'test'})=,
+最终 =Flask= 类中 =match_request= 方法中的 =rv = _request_ctx_stack.top.url_adapter.match()= 得到返回值: =<type 'tuple'>: ('hello', {'name': u'test'})=.
 
 * 请求上下文堆栈
 
@@ -1046,8 +1058,8 @@ class Rule(RuleFactory):
 
 #+END_SRC
 
-调用 `LocalStack` 的 `push` 方法.
-第一入栈时代理访问到 self._local 的 stack 值为空, 即 `rv` 值为 None.
+调用 =LocalStack= 的 =push= 方法.
+第一入栈时代理访问到 self._local 的 stack 值为空, 即 =rv= 值为 None.
 
 #+DOWNLOADED: file:///Users/c/Pictures/%E7%AC%AC%E4%B8%80%E5%85%A5%E6%A0%88%E6%97%B6%E4%BB%A3%E7%90%86%E8%AE%BF%E9%97%AE%E5%88%B0self._local%E7%9A%84stack%E5%80%BC%E4%B8%BA%E7%A9%BA.png @ 2019-06-30 20:20:13
 [[file:screenshotImg/%25E7%25AC%25AC%25E4%25B8%2580%25E5%2585%25A5%25E6%25A0%2588%25E6%2597%25B6%25E4%25BB%25A3%25E7%2590%2586%25E8%25AE%25BF%25E9%2597%25AE%25E5%2588%25B0self._local%25E7%259A%2584stack%25E5%2580%25BC%25E4%25B8%25BA%25E7%25A9%25BA_2019-06-30_20-20-13.png]]
@@ -1057,7 +1069,7 @@ class Rule(RuleFactory):
 #+DOWNLOADED: file:///Users/c/Pictures/obj.png @ 2019-06-30 20:22:44
 [[file:screenshotImg/obj_2019-06-30_20-22-44.png]]
 
-`rv = getattr(self._local, 'stack', None)` 调用 `Local` 类中 `__setattr__` 方法.
+=rv = getattr(self._local, 'stack', None)= 调用 =Local= 类中 =__setattr__= 方法.
 
 #+BEGIN_SRC python :results valuse list :exports both
 class Local(object):
